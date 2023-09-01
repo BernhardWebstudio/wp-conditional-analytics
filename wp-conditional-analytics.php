@@ -45,6 +45,9 @@ class WpConditionalAnalytics
 
     // Add actual output
     add_action('wp_body_open', array($this, 'conditionally_output_anayltics'), 20);
+
+    // Make sure to serve a different version depending on WP Rocket
+    add_filter('rocket_cache_dynamic_cookies', array(&$this, 'rocket_add_conditionally_analytics_dynamic_cookies'));
   }
 
   /**
@@ -73,9 +76,25 @@ class WpConditionalAnalytics
     return $input;
   }
 
+  /**
+   * Tell WP Rocket to serve a different cache depending on the value of the cookie
+   * 
+   * @param array $cookies 
+   * @return array 
+   */
+  function rocket_add_conditionally_analytics_dynamic_cookies($cookies)
+  {
+    $cookies[] = self::COOKIE_NAME;
+    return $cookies;
+  }
+
+  /**
+   * Actually output the banner or the analytics
+   * 
+   * @return void 
+   */
   function conditionally_output_anayltics()
   {
-
     $settings = $this->wpsf->get_settings();
     echo "<!-- Outputting wp-conditional-analytics stuff -->";
 
@@ -166,6 +185,23 @@ class WpConditionalAnalytics
         .wp-conditional-analytics-banner-buttons {
           display: flex;
           align-items: baseline;
+          gap: 0.5rem;
+        }
+
+        @media screen and (min-width: 768px) {
+          .wp-conditional-analytics-banner-content {
+            flex-basis: 50%;
+          }
+        }
+
+        @media screen and (max-width: 768px) {
+          .wp-conditional-analytics-banner-content {
+            flex-wrap: wrap;
+          }
+
+          .wp-conditional-analytics-banner-buttons {
+            flex-wrap: wrap;
+          }
         }
       </style>
       <div class="wp-conditional-analytics-banner fixed full-width">
