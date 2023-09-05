@@ -44,10 +44,7 @@ class WpConditionalAnalytics
     add_filter($this->wpsf->get_option_group() . '_settings_validate', array(&$this, 'validate_settings'));
 
     // Add actual output
-    add_action('wp_body_open', array($this, 'conditionally_output_anayltics'), 20);
-
-    // Make sure to serve a different version depending on WP Rocket
-    add_filter('rocket_cache_dynamic_cookies', array(&$this, 'rocket_add_conditionally_analytics_dynamic_cookies'));
+    add_action('wp_body_open', array($this, 'conditionally_output_analytics'), 20);
   }
 
   /**
@@ -77,23 +74,11 @@ class WpConditionalAnalytics
   }
 
   /**
-   * Tell WP Rocket to serve a different cache depending on the value of the cookie
-   * 
-   * @param array $cookies 
-   * @return array 
-   */
-  function rocket_add_conditionally_analytics_dynamic_cookies($cookies)
-  {
-    $cookies[] = self::COOKIE_NAME;
-    return $cookies;
-  }
-
-  /**
    * Actually output the banner or the analytics
    * 
    * @return void 
    */
-  function conditionally_output_anayltics()
+  function conditionally_output_analytics()
   {
     $settings = $this->wpsf->get_settings();
     echo "<!-- Outputting wp-conditional-analytics stuff -->";
@@ -101,131 +86,144 @@ class WpConditionalAnalytics
     $showBanner = $settings["general_activate_banner"];
     $includeAnalytics = !$showBanner;
 
-    if (isset($_COOKIE[self::COOKIE_NAME])) {
-      $showBanner = false;
-      $includeAnalytics = filter_var($_COOKIE[self::COOKIE_NAME], FILTER_VALIDATE_BOOLEAN);
-    }
-
-    if ($includeAnalytics) {
-      //////////////////////////////// ActiveCampaign Analytics
+    // always include the banner, but hidden
 ?>
-      <script type="text/javascript">
-        window.addEventListener('load', () => {
-          if (typeof vgo === "function") {
-            vgo('process', 'allowTracking');
-          }
-        });
-      </script>
-      <?php
-      //////////////////////////////// Google Analytics
 
-      $ganalytics_tag = $settings["google_analytics_google_analytics_tag"];
-      if ($ganalytics_tag) {
+    <style>
+      .wp-conditional-analytics-banner {
+        width: 100%;
+        position: fixed;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: var(--wp--preset--color--bg-light, inherit);
+        color: var(--wp--preset--color--bg-dark, inherit);
+        z-index: 999;
+        padding: 0.75rem;
+      }
 
-        if (str_starts_with($ganalytics_tag, "UA-")) {
-      ?>
-          <!-- Google tag (gtag.js) -->
-          <script async src="https://www.googletagmanager.com/gtag/js?id=<?php echo $ganalytics_tag; ?>"></script>
-          <script>
-            window.dataLayer = window.dataLayer || [];
+      .wp-conditional-analytics-banner-content {
+        display: flex;
+        gap: 1rem;
+      }
 
-            function gtag() {
-              dataLayer.push(arguments);
-            }
-            gtag('js', new Date());
+      .wp-conditional-analytics-banner-content p {
+        margin: 0;
+        padding: 0;
+      }
 
-            gtag('config', '<?php echo $ganalytics_tag; ?>');
-          </script>
+      .wp-conditional-analytics-banner-buttons {
+        display: flex;
+        align-items: baseline;
+        gap: 0.5rem;
+      }
 
-        <?php
-        } else {
-        ?>
-          <!-- Google tag (gtag.js) -->
-          <script async src="https://www.googletagmanager.com/gtag/js?id=<?php echo $ganalytics_tag; ?>"></script>
-          <script>
-            window.dataLayer = window.dataLayer || [];
-
-            function gtag() {
-              dataLayer.push(arguments);
-            }
-            gtag('js', new Date());
-
-            gtag('config', '<?php echo $ganalytics_tag; ?>');
-          </script>
-      <?php
+      @media screen and (min-width: 768px) {
+        .wp-conditional-analytics-banner-content {
+          flex-basis: 50%;
         }
       }
-    }
 
-    if ($showBanner) {
-      ?>
-      <style>
-        .wp-conditional-analytics-banner {
-          width: 100%;
-          position: fixed;
-          left: 0;
-          right: 0;
-          bottom: 0;
-          background-color: var(--wp--preset--color--bg-light, inherit);
-          color: var(--wp--preset--color--bg-dark, inherit);
-          z-index: 999;
-          padding: 0.75rem;
-        }
-
+      @media screen and (max-width: 768px) {
         .wp-conditional-analytics-banner-content {
-          display: flex;
-          gap: 1rem;
-        }
-
-        .wp-conditional-analytics-banner-content p {
-          margin: 0;
-          padding: 0;
+          flex-wrap: wrap;
         }
 
         .wp-conditional-analytics-banner-buttons {
-          display: flex;
-          align-items: baseline;
-          gap: 0.5rem;
+          flex-wrap: wrap;
+        }
+      }
+
+      .hidden {
+        display: none;
+        visibility: collapse;
+      }
+    </style>
+    <div class="wp-conditional-analytics-banner fixed full-width hidden" id="wpca_banner">
+      <script type="text/javascript">
+        function wpcaSetCookie(cname, cvalue, exdays) {
+          const d = new Date();
+          d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
+          let expires = "expires=" + d.toUTCString();
+          document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
         }
 
-        @media screen and (min-width: 768px) {
-          .wp-conditional-analytics-banner-content {
-            flex-basis: 50%;
-          }
+        function hideBanner() {
+          document.getElementById("wpca_banner").classList.add("hidden");
         }
-
-        @media screen and (max-width: 768px) {
-          .wp-conditional-analytics-banner-content {
-            flex-wrap: wrap;
-          }
-
-          .wp-conditional-analytics-banner-buttons {
-            flex-wrap: wrap;
-          }
-        }
-      </style>
-      <div class="wp-conditional-analytics-banner fixed full-width">
-        <script type="text/javascript">
-          function wpcaSetCookie(cname, cvalue, exdays) {
-            const d = new Date();
-            d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
-            let expires = "expires=" + d.toUTCString();
-            document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
-          }
-        </script>
-        <div class="flex row wp-conditional-analytics-banner-content">
-          <div class="column wp-conditional-analytics-banner-text">
-            <p>
-              <?php _e('Can we use Analytics, please?', 'wp-conditional-analytics'); ?>
-            </p>
-          </div>
-          <div class="column wp-conditional-analytics-banner-buttons button-group">
-            <a class="button" href="<?php echo get_privacy_policy_url(); ?>"><?php _e('Privacy Policy', 'wp-conditional-analytics'); ?></a>
-            <button type="button" class="button btn btn-primary btn-accept" onclick='wpcaSetCookie("<?php echo self::COOKIE_NAME; ?>", "true", <?php echo $settings["general"]["acceptance_save_duration"] ?>); location.reload();'><?php _e('Allow', 'wp-conditional-analytics'); ?></button>
-            <button type="button" class="button btn btn-secondary btn-cancel" onclick='wpcaSetCookie("<?php echo self::COOKIE_NAME; ?>", "false", <?php echo $settings["general"]["acceptance_decline_duration"] ?>); location.reload();'><?php _e('Decline', 'wp-conditional-analytics'); ?></button>
-          </div>
+      </script>
+      <div class="flex row wp-conditional-analytics-banner-content">
+        <div class="column wp-conditional-analytics-banner-text">
+          <p>
+            <?php _e('Can we use Analytics, please?', 'wp-conditional-analytics'); ?>
+          </p>
+        </div>
+        <div class="column wp-conditional-analytics-banner-buttons button-group">
+          <a class="button" href="<?php echo get_privacy_policy_url(); ?>"><?php _e('Privacy Policy', 'wp-conditional-analytics'); ?></a>
+          <button type="button" class="button btn btn-primary btn-accept" onclick='wpcaSetCookie("<?php echo self::COOKIE_NAME; ?>", "true", <?php echo $settings["general"]["acceptance_save_duration"] ?>); loadAnalytics(); hideBanner()'><?php _e('Allow', 'wp-conditional-analytics'); ?></button>
+          <button type="button" class="button btn btn-secondary btn-cancel" onclick='wpcaSetCookie("<?php echo self::COOKIE_NAME; ?>", "false", <?php echo $settings["general"]["acceptance_decline_duration"] ?>); hideBanner()'><?php _e('Decline', 'wp-conditional-analytics'); ?></button>
         </div>
       </div>
+    </div>
+    <script type="text/javascript">
+      function wpcaGetCookie(name) {
+        var dc = document.cookie;
+        var prefix = name + "=";
+        var begin = dc.indexOf("; " + prefix);
+        if (begin == -1) {
+          begin = dc.indexOf(prefix);
+          if (begin != 0) return null;
+        } else {
+          begin += 2;
+          var end = document.cookie.indexOf(";", begin);
+          if (end == -1) {
+            end = dc.length;
+          }
+        }
+        // because unescape has been deprecated, replaced with decodeURI
+        //return unescape(dc.substring(begin + prefix.length, end));
+        return decodeURI(dc.substring(begin + prefix.length, end));
+      }
+
+      var myCookie = wpcaGetCookie("<?php echo self::COOKIE_NAME; ?>");
+      if (myCookie == null) {
+        document.getElementById("wpca_banner").classList.remove("hidden");
+      }
+    </script>
+    <?php
+
+    //////////////////////////////// ActiveCampaign Analytics
+    ?>
+    <script type="text/javascript">
+      window.addEventListener('load', () => {
+        if (typeof vgo === "function" && wpcaGetCookie("<?php echo self::COOKIE_NAME; ?>") == "true") {
+          vgo('process', 'allowTracking');
+        }
+      });
+    </script>
+    <?php
+    //////////////////////////////// Google Analytics
+
+    $ganalytics_tag = $settings["google_analytics_google_analytics_tag"];
+    if ($ganalytics_tag) {
+    ?>
+      <script>
+        function loadAnalytics() {
+          var addGoogleAnalytics = document.createElement("script");
+          addGoogleAnalytics.setAttribute("src", "https://www.googletagmanager.com/gtag/js?id=<?php echo $ganalytics_tag; ?>");
+          addGoogleAnalytics.async = "true";
+          document.head.appendChild(addGoogleAnalytics);
+
+          var addDataLayer = document.createElement("script");
+          var dataLayerData = document.createTextNode("window.dataLayer = window.dataLayer || []; \n function gtag(){dataLayer.push(arguments);} \n gtag('js', new Date()); \n gtag('config', '<?php echo $ganalytics_tag; ?>');");
+          addDataLayer.appendChild(dataLayerData);
+          document.head.appendChild(addDataLayer);
+        }
+
+        if (wpcaGetCookie("<?php echo self::COOKIE_NAME; ?>") == "true") {
+
+        }
+      </script>
 <?php
     }
   }
