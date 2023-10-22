@@ -17,6 +17,12 @@ class WpConditionalAnalytics
   public const COOKIE_NAME = 'wp_conditional_ana_banner';
 
   /**
+   * 
+   * @var array
+   */
+  private $additionalScripts = [];
+
+  /**
    * @var string
    */
   private $plugin_path;
@@ -59,6 +65,16 @@ class WpConditionalAnalytics
     ));
   }
 
+  public function registerScript($id, $url)
+  {
+    $this->additionalScripts[$id] = $url;
+  }
+
+  public function removeScript($id)
+  {
+    unset($this->additionalScripts[$id]);
+  }
+
   /**
    * Validate settings.
    * 
@@ -81,13 +97,56 @@ class WpConditionalAnalytics
   function conditionally_output_analytics()
   {
     $settings = $this->wpsf->get_settings();
+
+    //////////////////////////////// ActiveCampaign Analytics
+?>
+    <script type="text/javascript">
+      window.addEventListener('load', () => {
+        if (typeof vgo === "function" && wpcaGetCookie("<?php echo self::COOKIE_NAME; ?>") == "true") {
+          vgo('process', 'allowTracking');
+        }
+      });
+    </script>
+    <?php
+    //////////////////////////////// Google Analytics
+
+    $ganalytics_tag = $settings["google_analytics_google_analytics_tag"];
+    if ($ganalytics_tag) {
+    ?>
+      <script>
+        function wpcaLoadAnalytics() {
+          wpcaLoadScript("google-analytics", "https://www.googletagmanager.com/gtag/js?id=<?php echo $ganalytics_tag; ?>");
+
+          var addDataLayer = document.createElement("script");
+          var dataLayerData = document.createTextNode("window.dataLayer = window.dataLayer || []; \n function gtag(){dataLayer.push(arguments);} \n gtag('js', new Date()); \n gtag('config', '<?php echo $ganalytics_tag; ?>');");
+          addDataLayer.appendChild(dataLayerData);
+          document.head.appendChild(addDataLayer);
+
+          <?php
+          // load the adidtional scripts we may load
+          foreach ($this->additionalScripts as $id => $url) {
+            echo "wpcaLoadScript('$id', '$url');";
+          }
+          ?>
+        }
+      </script>
+    <?php
+    } else {
+    ?>
+      <script>
+        function wpcaLoadAnalytics() {}
+      </script>
+    <?php
+    }
+
+    //////////////////////////////// The heart of things
     echo "<!-- Outputting wp-conditional-analytics stuff -->";
 
     $showBanner = $settings["general_activate_banner"];
     $includeAnalytics = !$showBanner;
 
     // always include the banner, but hidden
-?>
+    ?>
 
     <style>
       .wp-conditional-analytics-banner {
@@ -138,6 +197,14 @@ class WpConditionalAnalytics
         display: none;
         visibility: collapse;
       }
+
+      body.cookies-accepted .hide-on-cookies-accepted {
+        display: none;
+      }
+
+      body.cookies-declined .hide-on-cookies-declined {
+        display: none;
+      }
     </style>
     <div class="wp-conditional-analytics-banner fixed full-width hidden" id="wpca_banner">
       <script type="text/javascript">
@@ -148,7 +215,7 @@ class WpConditionalAnalytics
           document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
         }
 
-        function hideBanner() {
+        function wpcaHideBanner() {
           document.getElementById("wpca_banner").classList.add("hidden");
         }
       </script>
@@ -160,8 +227,8 @@ class WpConditionalAnalytics
         </div>
         <div class="column wp-conditional-analytics-banner-buttons button-group">
           <a class="button" href="<?php echo get_privacy_policy_url(); ?>"><?php _e('Privacy Policy', 'wp-conditional-analytics'); ?></a>
-          <button type="button" class="button btn btn-primary btn-accept" onclick='wpcaSetCookie("<?php echo self::COOKIE_NAME; ?>", "true", <?php echo $settings["general"]["acceptance_save_duration"] ?>); loadAnalytics(); hideBanner()'><?php _e('Allow', 'wp-conditional-analytics'); ?></button>
-          <button type="button" class="button btn btn-secondary btn-cancel" onclick='wpcaSetCookie("<?php echo self::COOKIE_NAME; ?>", "false", <?php echo $settings["general"]["acceptance_decline_duration"] ?>); hideBanner()'><?php _e('Decline', 'wp-conditional-analytics'); ?></button>
+          <button type="button" class="button btn btn-primary btn-accept" onclick='wpcaSetCookie("<?php echo self::COOKIE_NAME; ?>", "true", <?php echo $settings["general"]["acceptance_save_duration"] ?>); wpcaLoadAnalytics(); wpcaHideBanner()'><?php _e('Allow', 'wp-conditional-analytics'); ?></button>
+          <button type="button" class="button btn btn-secondary btn-cancel" onclick='wpcaSetCookie("<?php echo self::COOKIE_NAME; ?>", "false", <?php echo $settings["general"]["acceptance_decline_duration"] ?>); wpcaHideBanner()'><?php _e('Decline', 'wp-conditional-analytics'); ?></button>
         </div>
       </div>
     </div>
@@ -189,44 +256,51 @@ class WpConditionalAnalytics
       if (myCookie == null) {
         document.getElementById("wpca_banner").classList.remove("hidden");
       }
+
+      function wpcaLoadScript(id, url, attributes = null) {
+        var script = document.createElement("script");
+        script.setAttribute("src", url);
+        script.setAttribute("id", id + "-js");
+        script.async = true;
+        if (attributes != null) {
+          for (const [key, value] of Object.entries(attributes)) {
+            script.setAttribute(key, value);
+          }
+        }
+        document.head.appendChild(script);
+      }
+
+      function wpcaConditionallyLoadScript(id, url, attributes = null) {
+        if (wpcaGetCookie("<?php echo self::COOKIE_NAME; ?>") == "true" && !document.getElementById(id)) {
+          wpcaLoadScript(id, url, attributes);
+        }
+      }
+
+      function wpcaAcceptCookies(reload = false) {
+        wpcaSetCookie("<?php echo self::COOKIE_NAME; ?>", "true", <?php echo $settings["general"]["acceptance_save_duration"] ?>);
+        wpcaLoadAnalytics();
+        wpcaHideBanner();
+        if (reload) {
+          location.reload();
+        }
+      }
+
+      if (wpcaGetCookie("<?php echo self::COOKIE_NAME; ?>") == "true") {
+        wpcaLoadAnalytics();
+        document.body.classList.add("cookies-accepted");
+      }
+      if (wpcaGetCookie("<?php echo self::COOKIE_NAME; ?>") == "false") {
+        document.body.classList.add("cookies-declined");
+      }
     </script>
-    <?php
-
-    //////////////////////////////// ActiveCampaign Analytics
-    ?>
-    <script type="text/javascript">
-      window.addEventListener('load', () => {
-        if (typeof vgo === "function" && wpcaGetCookie("<?php echo self::COOKIE_NAME; ?>") == "true") {
-          vgo('process', 'allowTracking');
-        }
-      });
-    </script>
-    <?php
-    //////////////////////////////// Google Analytics
-
-    $ganalytics_tag = $settings["google_analytics_google_analytics_tag"];
-    if ($ganalytics_tag) {
-    ?>
-      <script>
-        function loadAnalytics() {
-          var addGoogleAnalytics = document.createElement("script");
-          addGoogleAnalytics.setAttribute("src", "https://www.googletagmanager.com/gtag/js?id=<?php echo $ganalytics_tag; ?>");
-          addGoogleAnalytics.async = "true";
-          document.head.appendChild(addGoogleAnalytics);
-
-          var addDataLayer = document.createElement("script");
-          var dataLayerData = document.createTextNode("window.dataLayer = window.dataLayer || []; \n function gtag(){dataLayer.push(arguments);} \n gtag('js', new Date()); \n gtag('config', '<?php echo $ganalytics_tag; ?>');");
-          addDataLayer.appendChild(dataLayerData);
-          document.head.appendChild(addDataLayer);
-        }
-
-        if (wpcaGetCookie("<?php echo self::COOKIE_NAME; ?>") == "true") {
-
-        }
-      </script>
 <?php
-    }
   }
 }
 
-new WpConditionalAnalytics();
+$globalWpConditionalAnalytics = new WpConditionalAnalytics();
+
+function wpca_enqueue_script($id, $url)
+{
+  global $globalWpConditionalAnalytics;
+  $globalWpConditionalAnalytics->registerScript($id, $url);
+}
