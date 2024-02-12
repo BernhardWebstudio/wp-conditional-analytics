@@ -225,10 +225,10 @@ class WpConditionalAnalytics
             <?php _e('Can we use Analytics, please?', 'wp-conditional-analytics'); ?>
           </p>
         </div>
-        <div class="column wp-conditional-analytics-banner-buttons button-group">
-          <a class="button" href="<?php echo get_privacy_policy_url(); ?>"><?php _e('Privacy Policy', 'wp-conditional-analytics'); ?></a>
-          <button type="button" class="button btn btn-primary btn-accept" onclick='wpcaSetCookie("<?php echo self::COOKIE_NAME; ?>", "true", <?php echo $settings["general"]["acceptance_save_duration"] ?>); wpcaLoadAnalytics(); wpcaHideBanner()'><?php _e('Allow', 'wp-conditional-analytics'); ?></button>
-          <button type="button" class="button btn btn-secondary btn-cancel" onclick='wpcaSetCookie("<?php echo self::COOKIE_NAME; ?>", "false", <?php echo $settings["general"]["acceptance_decline_duration"] ?>); wpcaHideBanner()'><?php _e('Decline', 'wp-conditional-analytics'); ?></button>
+        <div class="column wp-conditional-analytics-banner-buttons button-group wp-element-button-group">
+          <a class="button btn wp-element-button " href="<?php echo get_privacy_policy_url(); ?>"><?php _e('Privacy Policy', 'wp-conditional-analytics'); ?></a>
+          <button type="button" class="button btn wp-element-button btn-primary btn-accept" onclick='wpcaSetCookie("<?php echo self::COOKIE_NAME; ?>", "true", <?php echo $settings["general_acceptance_save_duration"] ?>); wpcaLoadAnalytics(); wpcaHideBanner()'><?php _e('Allow', 'wp-conditional-analytics'); ?></button>
+          <button type="button" class="button btn wp-element-button btn-secondary btn-cancel" onclick='wpcaSetCookie("<?php echo self::COOKIE_NAME; ?>", "false", <?php echo $settings["general_acceptance_decline_duration"] ?>); wpcaHideBanner()'><?php _e('Decline', 'wp-conditional-analytics'); ?></button>
         </div>
       </div>
     </div>
@@ -277,7 +277,7 @@ class WpConditionalAnalytics
       }
 
       function wpcaAcceptCookies(reload = false) {
-        wpcaSetCookie("<?php echo self::COOKIE_NAME; ?>", "true", <?php echo $settings["general"]["acceptance_save_duration"] ?>);
+        wpcaSetCookie("<?php echo self::COOKIE_NAME; ?>", "true", <?php echo $settings["general_acceptance_save_duration"] ?>);
         wpcaLoadAnalytics();
         wpcaHideBanner();
         if (reload) {
