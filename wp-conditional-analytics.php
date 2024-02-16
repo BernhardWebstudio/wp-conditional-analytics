@@ -285,7 +285,45 @@ class WpConditionalAnalytics
         }
       }
 
-      if (wpcaGetCookie("<?php echo self::COOKIE_NAME; ?>") == "true") {
+      const EU_TIMEZONES = [
+        'Europe/Vienna',
+        'Europe/Brussels',
+        'Europe/Sofia',
+        'Europe/Zagreb',
+        'Asia/Famagusta',
+        'Asia/Nicosia',
+        'Europe/Prague',
+        'Europe/Copenhagen',
+        'Europe/Tallinn',
+        'Europe/Helsinki',
+        'Europe/Paris',
+        'Europe/Berlin',
+        'Europe/Zurich',
+        'Europe/Bern',
+        'Europe/Busingen',
+        'Europe/Athens',
+        'Europe/Budapest',
+        'Europe/Dublin',
+        'Europe/Rome',
+        'Europe/Riga',
+        'Europe/Vilnius',
+        'Europe/Luxembourg',
+        'Europe/Malta',
+        'Europe/Amsterdam',
+        'Europe/Warsaw',
+        'Atlantic/Azores',
+        'Atlantic/Madeira',
+        'Europe/Lisbon',
+        'Europe/Bucharest',
+        'Europe/Bratislava',
+        'Europe/Ljubljana',
+        'Africa/Ceuta',
+        'Atlantic/Canary',
+        'Europe/Madrid',
+        'Europe/Stockholm'
+      ];
+
+      if ((wpcaGetCookie("<?php echo self::COOKIE_NAME; ?>") == "true") || (!EU_TIMEZONES.includes(Intl.DateTimeFormat().resolvedOptions().timeZone)) || (/bot|crawler|spider|crawling/i.test(navigator.userAgent))) {
         wpcaLoadAnalytics();
         document.body.classList.add("cookies-accepted");
       }
