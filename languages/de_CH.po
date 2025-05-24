@@ -1,24 +1,99 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Conditional Analytics\n"
-"POT-Creation-Date: 2023-08-27 15:52+0200\n"
-"PO-Revision-Date: 2023-08-27 15:56+0200\n"
+"POT-Creation-Date: 2025-05-24 09:16+0200\n"
+"PO-Revision-Date: 2025-05-24 09:23+0200\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: de_CH\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 3.3.2\n"
+"X-Generator: Poedit 3.4.1\n"
 "X-Poedit-Basepath: ..\n"
 "X-Poedit-Flags-xgettext: --add-comments=translators:\n"
 "X-Poedit-WPHeader: wp-conditional-analytics.php\n"
 "X-Poedit-SourceCharset: UTF-8\n"
 "X-Poedit-KeywordsList: __;_e;_n:1,2;_x:1,2c;_ex:1,2c;_nx:4c,1,2;esc_attr__;"
-"esc_attr_e;esc_attr_x:1,2c;esc_html__;esc_html_e;esc_html_x:1,2c;"
-"_n_noop:1,2;_nx_noop:3c,1,2;__ngettext_noop:1,2\n"
+"esc_attr_e;esc_attr_x:1,2c;esc_html__;esc_html_e;esc_html_x:1,2c;_n_noop:1,2;"
+"_nx_noop:3c,1,2;__ngettext_noop:1,2\n"
 "X-Poedit-SearchPath-0: .\n"
 "X-Poedit-SearchPathExcluded-0: *.min.js\n"
+"X-Poedit-SearchPathExcluded-1: wp-settings-framework/assets/vendor\n"
+"X-Poedit-SearchPathExcluded-2: node_modules\n"
+
+#: assets/blocks/external-content-wrapper/edit.js:49
+msgid "General"
+msgstr "Generell"
+
+#: assets/blocks/external-content-wrapper/edit.js:50
+msgid "Analytics"
+msgstr "Analytik"
+
+#: assets/blocks/external-content-wrapper/edit.js:51
+msgid "Marketing"
+msgstr "Marketing"
+
+#: assets/blocks/external-content-wrapper/edit.js:53
+msgid "Social Media"
+msgstr "Soziale Medien"
+
+#: assets/blocks/external-content-wrapper/edit.js:56
+msgid "Video"
+msgstr "Video"
+
+#: assets/blocks/external-content-wrapper/edit.js:57
+msgid "Maps"
+msgstr "Karten"
+
+#: assets/blocks/external-content-wrapper/edit.js:58
+msgid "Custom"
+msgstr "Benutzerdefiniert"
+
+#: assets/blocks/external-content-wrapper/edit.js:68
+msgid "Content Settings"
+msgstr "Inhaltseinstellungen"
+
+#: assets/blocks/external-content-wrapper/edit.js:70
+msgid "Content Type"
+msgstr "Inhaltstyp"
+
+#: assets/blocks/external-content-wrapper/edit.js:75
+msgid ""
+"Select the type of external content. This allows users to selectively accept "
+"specific content types."
+msgstr ""
+"Typ des externen Inhalts auswählen. Das erlaubt Nutzern, selektiv externe "
+"Inhalte zuzulassen."
+
+#: assets/blocks/external-content-wrapper/edit.js:82
+msgid "Custom Identifier"
+msgstr "Benutzerdefinierte Kennzeichnung"
+
+#: assets/blocks/external-content-wrapper/edit.js:86
+msgid "Enter a unique identifier for this content type."
+msgstr "Eine eindeutige Kennzeichnung eingeben für diesen Inhaltstyp."
+
+#: assets/blocks/external-content-wrapper/edit.js:93
+msgid "Blocking Message"
+msgstr "Nachricht bei Blockade"
+
+#: assets/blocks/external-content-wrapper/edit.js:97
+msgid "This content is currently blocked to protect your privacy."
+msgstr "Dieser Inhalt ist derzeit blockiert, um Ihre Privatsphäre zu schützen."
+
+#: assets/blocks/external-content-wrapper/edit.js:105
+msgid "Button Text"
+msgstr "Schaltflächentext"
+
+#: assets/blocks/external-content-wrapper/edit.js:108
+msgid "Accept cookies and show content"
+msgstr "Cookies akzeptieren, Inhalt anzeigen"
+
+#: assets/blocks/external-content-wrapper/render.php:40
+#: blocks/external-content-wrapper/render.php:40
+msgid "Accept all cookies"
+msgstr "Alle Cookies akzeptieren"
 
 #: settings/settings-general.php:28
 msgid "General Settings"
@@ -45,26 +120,25 @@ msgid "Google Analytics Tag"
 msgstr "Google Analytics Tag"
 
 #. Plugin Name of the plugin/theme
-#: wp-conditional-analytics.php:57 wp-conditional-analytics.php:58
+#: wp-conditional-analytics.php:70 wp-conditional-analytics.php:71
 msgid "Conditional Analytics"
 msgstr "Bedingte Analytics"
 
-#: wp-conditional-analytics.php:179
+#: wp-conditional-analytics.php:237
 msgid "Can we use Analytics, please?"
 msgstr ""
 "Diese Website nutzt Analytics, um die Benutzer zu verstehen, und das "
-"Erlebnis zu verbessern. Dürfen wir auch bei Ihnen Analytics verwenden, "
-"bitte?"
+"Erlebnis zu verbessern. Dürfen wir auch bei Ihnen Analytics verwenden, bitte?"
 
-#: wp-conditional-analytics.php:183
+#: wp-conditional-analytics.php:241
 msgid "Privacy Policy"
 msgstr "Datenschutzerklärung"
 
-#: wp-conditional-analytics.php:184
+#: wp-conditional-analytics.php:242
 msgid "Allow"
 msgstr "Erlauben"
 
-#: wp-conditional-analytics.php:185
+#: wp-conditional-analytics.php:243
 msgid "Decline"
 msgstr "Ablehnen"
 
@@ -74,7 +148,7 @@ msgstr "WPSF Einstellungen müssen ein array sein"
 
 #: wp-settings-framework/wp-settings-framework.php:248
 msgid "You do not have sufficient permissions to access this page."
-msgstr "Sie dürfen nicht auf diese Seite zugreifen."
+msgstr "Sie haben keine Berechtigung, um auf diese Seite zuzugreifen."
 
 #: wp-settings-framework/wp-settings-framework.php:340
 msgid "Please select a file to import"
@@ -102,15 +176,15 @@ msgstr "Einstellungen importieren"
 
 #: wp-settings-framework/wp-settings-framework.php:1050
 msgid "Browse"
-msgstr "Durchstöbern"
+msgstr "Durchsuchen"
 
 #: wp-settings-framework/wp-settings-framework.php:1078
 msgid "Select a image to upload"
-msgstr "Auswählen eines Bildes zum Hochladen"
+msgstr "Bild zum Hochladen auswählen"
 
 #: wp-settings-framework/wp-settings-framework.php:1080
 msgid "Use this image"
-msgstr "Verwenden Sie dieses Bild"
+msgstr "Dieses Bild verwenden"
 
 #: wp-settings-framework/wp-settings-framework.php:1315
 #: wp-settings-framework/wp-settings-framework.php:1458
@@ -123,7 +197,7 @@ msgstr "Aktion fehlgeschlagen."
 
 #: wp-settings-framework/wp-settings-framework.php:1583
 msgid "No option group specified."
-msgstr "Keine Options-Gruppe spezifiziert."
+msgstr "Keine Gruppe von Optionen spezifiziert."
 
 #. Description of the plugin/theme
 msgid "Embeds Google Analytics & Co. only if \"accept\" banner was accepted"
@@ -135,4 +209,4 @@ msgstr "Tim Bernhard"
 
 #. Author URI of the plugin/theme
 msgid "https://genieblog.ch"
-msgstr ""
+msgstr "https://genieblog.ch"

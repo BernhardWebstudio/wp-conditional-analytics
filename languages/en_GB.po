@@ -1,24 +1,252 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Conditional Analytics\n"
-"POT-Creation-Date: 2023-08-27 15:49+0200\n"
-"PO-Revision-Date: 2023-08-27 15:51+0200\n"
+"POT-Creation-Date: 2025-05-24 09:24+0200\n"
+"PO-Revision-Date: 2025-05-24 09:25+0200\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: en_GB\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 3.3.2\n"
+"X-Generator: Poedit 3.4.1\n"
 "X-Poedit-Basepath: ..\n"
 "X-Poedit-Flags-xgettext: --add-comments=translators:\n"
 "X-Poedit-WPHeader: wp-conditional-analytics.php\n"
 "X-Poedit-SourceCharset: UTF-8\n"
 "X-Poedit-KeywordsList: __;_e;_n:1,2;_x:1,2c;_ex:1,2c;_nx:4c,1,2;esc_attr__;"
-"esc_attr_e;esc_attr_x:1,2c;esc_html__;esc_html_e;esc_html_x:1,2c;"
-"_n_noop:1,2;_nx_noop:3c,1,2;__ngettext_noop:1,2\n"
+"esc_attr_e;esc_attr_x:1,2c;esc_html__;esc_html_e;esc_html_x:1,2c;_n_noop:1,2;"
+"_nx_noop:3c,1,2;__ngettext_noop:1,2\n"
 "X-Poedit-SearchPath-0: .\n"
 "X-Poedit-SearchPathExcluded-0: *.min.js\n"
+
+#: assets/blocks/external-content-wrapper/edit.js:49
+msgid "General"
+msgstr "General"
+
+#: assets/blocks/external-content-wrapper/edit.js:50
+msgid "Analytics"
+msgstr "Analytics"
+
+#: assets/blocks/external-content-wrapper/edit.js:51
+msgid "Marketing"
+msgstr "Marketing"
+
+#: assets/blocks/external-content-wrapper/edit.js:53
+msgid "Social Media"
+msgstr "Social Media"
+
+#: assets/blocks/external-content-wrapper/edit.js:56
+msgid "Video"
+msgstr "Video"
+
+#: assets/blocks/external-content-wrapper/edit.js:57
+msgid "Maps"
+msgstr "Maps"
+
+#: assets/blocks/external-content-wrapper/edit.js:58
+msgid "Custom"
+msgstr "Custom"
+
+#: assets/blocks/external-content-wrapper/edit.js:68
+msgid "Content Settings"
+msgstr "Content Settings"
+
+#: assets/blocks/external-content-wrapper/edit.js:70
+msgid "Content Type"
+msgstr "Content Type"
+
+#: assets/blocks/external-content-wrapper/edit.js:75
+msgid ""
+"Select the type of external content. This allows users to selectively accept "
+"specific content types."
+msgstr ""
+"Select the type of external content. This allows users to selectively accept "
+"specific content types."
+
+#: assets/blocks/external-content-wrapper/edit.js:82
+msgid "Custom Identifier"
+msgstr "Custom Identifier"
+
+#: assets/blocks/external-content-wrapper/edit.js:86
+msgid "Enter a unique identifier for this content type."
+msgstr "Enter a unique identifier for this content type."
+
+#: assets/blocks/external-content-wrapper/edit.js:93
+msgid "Blocking Message"
+msgstr "Blocking Message"
+
+#: assets/blocks/external-content-wrapper/edit.js:97
+msgid "This content is currently blocked to protect your privacy."
+msgstr "This content is currently blocked to protect your privacy."
+
+#: assets/blocks/external-content-wrapper/edit.js:105
+msgid "Button Text"
+msgstr "Button Text"
+
+#: assets/blocks/external-content-wrapper/edit.js:108
+msgid "Accept cookies and show content"
+msgstr "Accept cookies and show content"
+
+#: assets/blocks/external-content-wrapper/render.php:40
+#: blocks/external-content-wrapper/render.php:40
+msgid "Accept all cookies"
+msgstr "Accept all cookies"
+
+#: node_modules/meow/node_modules/yargs-parser/build/lib/yargs-parser.js:419
+#: node_modules/stylelint/node_modules/meow/build/dependencies.js:465
+#: node_modules/yargs-parser/build/lib/yargs-parser.js:422
+#, javascript-format
+msgid "Argument unexpected for: %s"
+msgstr "Argument unexpected for: %s"
+
+#: node_modules/meow/node_modules/yargs-parser/build/lib/yargs-parser.js:428
+#: node_modules/meow/node_modules/yargs-parser/build/lib/yargs-parser.js:442
+#: node_modules/meow/node_modules/yargs-parser/build/lib/yargs-parser.js:495
+#: node_modules/stylelint/node_modules/meow/build/dependencies.js:473
+#: node_modules/stylelint/node_modules/meow/build/dependencies.js:485
+#: node_modules/stylelint/node_modules/meow/build/dependencies.js:528
+#: node_modules/yargs-parser/build/lib/yargs-parser.js:431
+#: node_modules/yargs-parser/build/lib/yargs-parser.js:445
+#: node_modules/yargs-parser/build/lib/yargs-parser.js:498
+#, javascript-format
+msgid "Not enough arguments following: %s"
+msgstr "Not enough arguments following: %s"
+
+#: node_modules/meow/node_modules/yargs-parser/build/lib/yargs-parser.js:634
+#: node_modules/stylelint/node_modules/meow/build/dependencies.js:648
+#: node_modules/yargs-parser/build/lib/yargs-parser.js:635
+#, javascript-format
+msgid "Invalid JSON config file: %s"
+msgstr "Invalid JSON config file: %s"
+
+#: node_modules/meow/node_modules/yargs-parser/build/lib/yargs-parser.js:963
+#: node_modules/stylelint/node_modules/meow/build/dependencies.js:937
+#: node_modules/yargs-parser/build/lib/yargs-parser.js:964
+#, javascript-format
+msgid "Invalid configuration: %s, opts.count excludes opts.array."
+msgstr "Invalid configuration: %s, opts.count excludes opts.array."
+
+#: node_modules/meow/node_modules/yargs-parser/build/lib/yargs-parser.js:967
+#: node_modules/stylelint/node_modules/meow/build/dependencies.js:941
+#: node_modules/yargs-parser/build/lib/yargs-parser.js:968
+#, javascript-format
+msgid "Invalid configuration: %s, opts.count excludes opts.narg."
+msgstr "Invalid configuration: %s, opts.count excludes opts.narg."
+
+#: node_modules/playwright-core/lib/vite/traceViewer/assets/defaultSettingsView-DkkRvn5X.js:34
+msgid "xlinkHref"
+msgstr "xlinkHref"
+
+#: node_modules/prettier/plugins/angular.js:2
+msgid "{{"
+msgstr "{{"
+
+#: node_modules/yargs/build/lib/usage.js:92
+msgid "Positionals:"
+msgstr "Positionals:"
+
+#: node_modules/yargs/build/lib/usage.js:189
+#: node_modules/yargs/build/lib/usage.js:192
+msgid "command"
+msgstr "command"
+
+#: node_modules/yargs/build/lib/usage.js:198
+msgid "Commands:"
+msgstr "Commands:"
+
+#: node_modules/yargs/build/lib/usage.js:217
+msgid "default"
+msgstr "default"
+
+#: node_modules/yargs/build/lib/usage.js:219
+msgid "aliases:"
+msgstr "aliases:"
+
+#: node_modules/yargs/build/lib/usage.js:223
+#: node_modules/yargs/build/lib/usage.js:329
+#, javascript-format
+msgid "deprecated: %s"
+msgstr "deprecated: %s"
+
+#: node_modules/yargs/build/lib/usage.js:226
+#: node_modules/yargs/build/lib/usage.js:330
+msgid "deprecated"
+msgstr "deprecated"
+
+#: node_modules/yargs/build/lib/usage.js:245
+msgid "Options:"
+msgstr "Options:"
+
+#: node_modules/yargs/build/lib/usage.js:317
+msgid "boolean"
+msgstr "boolean"
+
+#: node_modules/yargs/build/lib/usage.js:319
+msgid "count"
+msgstr "count"
+
+#: node_modules/yargs/build/lib/usage.js:321
+#: node_modules/yargs/build/lib/usage.js:323
+msgid "string"
+msgstr "string"
+
+#: node_modules/yargs/build/lib/usage.js:325
+msgid "array"
+msgstr "array"
+
+#: node_modules/yargs/build/lib/usage.js:327
+msgid "number"
+msgstr "number"
+
+#: node_modules/yargs/build/lib/usage.js:336
+msgid "required"
+msgstr "required"
+
+#: node_modules/yargs/build/lib/usage.js:338
+msgid "choices:"
+msgstr "choices:"
+
+#: node_modules/yargs/build/lib/usage.js:359
+msgid "Examples:"
+msgstr "Examples:"
+
+#: node_modules/yargs/build/lib/usage.js:464
+msgid "generated-value"
+msgstr "generated-value"
+
+#: node_modules/yargs/build/lib/usage.js:481
+msgid "default:"
+msgstr "default:"
+
+#: node_modules/yargs/build/lib/validation.js:160
+msgid "Invalid values:"
+msgstr "Invalid values:"
+
+#: node_modules/yargs/build/lib/validation.js:162
+#, javascript-format
+msgid "Argument: %s, Given: %s, Choices: %s"
+msgstr "Argument: %s, Given: %s, Choices: %s"
+
+#: node_modules/yargs/build/lib/validation.js:221
+msgid "Implications failed:"
+msgstr "Implications failed:"
+
+#: node_modules/yargs/build/lib/validation.js:255
+#: node_modules/yargs/build/lib/validation.js:266
+#, javascript-format
+msgid "Arguments %s and %s are mutually exclusive"
+msgstr "Arguments %s and %s are mutually exclusive"
+
+#: node_modules/yargs/build/lib/validation.js:285
+#, javascript-format
+msgid "Did you mean %s?"
+msgstr "Did you mean %s?"
+
+#: node_modules/yargs/build/lib/yargs-factory.js:183
+#, javascript-format
+msgid "Argument check failed: %s"
+msgstr "Argument check failed: %s"
 
 #: settings/settings-general.php:28
 msgid "General Settings"
@@ -45,23 +273,23 @@ msgid "Google Analytics Tag"
 msgstr "Google Analytics Tag"
 
 #. Plugin Name of the plugin/theme
-#: wp-conditional-analytics.php:57 wp-conditional-analytics.php:58
+#: wp-conditional-analytics.php:70 wp-conditional-analytics.php:71
 msgid "Conditional Analytics"
 msgstr "Conditional Analytics"
 
-#: wp-conditional-analytics.php:179
+#: wp-conditional-analytics.php:237
 msgid "Can we use Analytics, please?"
 msgstr "Can we use Analytics, please?"
 
-#: wp-conditional-analytics.php:183
+#: wp-conditional-analytics.php:241
 msgid "Privacy Policy"
 msgstr "Privacy Policy"
 
-#: wp-conditional-analytics.php:184
+#: wp-conditional-analytics.php:242
 msgid "Allow"
 msgstr "Allow"
 
-#: wp-conditional-analytics.php:185
+#: wp-conditional-analytics.php:243
 msgid "Decline"
 msgstr "Decline"
 
