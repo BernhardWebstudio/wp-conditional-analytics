@@ -29,8 +29,16 @@ function bewe_wp_conditional_analytics_settings($wpsf_settings)
     'section_order' => 1,
     'fields' => [
       [
+        'id' => 'use_wp_consent_api',
+        'title' => __('Use WP Consent API', 'wp-conditional-analytics'),
+        'desc' => __('If enabled and WP Consent API is available, the plugin will use it instead of the built-in banner. The WP Consent API allows integration with consent management platforms.', 'wp-conditional-analytics'),
+        'type' => 'checkbox',
+        'default' => true
+      ],
+      [
         'id' => 'activate_banner',
         'title' => __('Activate Banner', 'wp-conditional-analytics'),
+        'desc' => __('Show the built-in consent banner (ignored if WP Consent API is enabled and available)', 'wp-conditional-analytics'),
         'type' => 'checkbox',
         'default' => true
       ],
