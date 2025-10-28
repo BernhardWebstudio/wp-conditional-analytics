@@ -1,0 +1,45 @@
+{
+	"name": "wp-conditional-analytics",
+	"version": "1.0.0",
+	"description": "WordPress Plugin providing a \"accept\" banner before embedding Google Analytics (and other scripts that can be registered)",
+	"homepage": "https://github.com/BernhardWebstudio/wp-conditional-analytics#readme",
+	"bugs": {
+		"url": "https://github.com/BernhardWebstudio/wp-conditional-analytics/issues"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/BernhardWebstudio/wp-conditional-analytics.git"
+	},
+	"license": "MIT",
+	"author": "Tim Bernhard",
+	"engines": {
+		"node": ">=20",
+		"npm": ">=11"
+	},
+	"scripts": {
+		"test": "echo \"Error: no test specified\" && exit 1",
+		"build": "wp-scripts build --webpack-src-dir=assets/blocks --config webpack.config.js --webpack-copy-php --blocks-manifest",
+		"format": "wp-scripts format",
+		"lint:css": "wp-scripts lint-style",
+		"lint:js": "wp-scripts lint-js",
+		"packages-update": "wp-scripts packages-update",
+		"plugin-zip": "wp-scripts plugin-zip",
+		"start": "wp-scripts start --webpack-copy-php --blocks-manifest"
+	},
+	"devDependencies": {
+		"@wordpress/scripts": "^30.16.0",
+		"eslint-webpack-plugin": "^5.0.1",
+		"image-minimizer-webpack-plugin": "^4.1.3",
+		"postcss-rtl": "^2.0.0",
+		"remove-files-webpack-plugin": "^1.5.0",
+		"stylelint-webpack-plugin": "^5.0.1",
+		"svg-spritemap-webpack-plugin": "^4.7.0"
+	},
+	"files": [
+		"blocks",
+		"languages",
+		"settings",
+		"wp-settings-framework",
+		"wp-conditional-analytics.php"
+	]
+}

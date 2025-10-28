@@ -1,0 +1,38 @@
+/**
+ * The following styles get applied inside the editor only.
+ */
+
+.wp-block-conditional-analytics-external-content-wrapper {
+  border: 2px dashed #21759b;
+  padding: 1rem;
+  position: relative;
+
+  .editor-info-banner {
+    background-color: #21759b;
+    color: #fff;
+    padding: 0.2em 0.5em;
+    font-size: 1rem;
+    margin-bottom: 1rem;
+    border-radius: 3px;
+
+    &.no-category {
+      background-color: #d94f4f;
+    }
+  }
+
+  .editor-content {
+    min-height: 5rem;
+  }
+
+  &[data-content-type="analytics"] .editor-info-banner {
+    background-color: #4CAF50;
+  }
+
+  &[data-content-type="marketing"] .editor-info-banner {
+    background-color: #2196F3;
+  }
+
+  &[data-content-type="social-media"] .editor-info-banner {
+    background-color: #800080;
+  }
+}

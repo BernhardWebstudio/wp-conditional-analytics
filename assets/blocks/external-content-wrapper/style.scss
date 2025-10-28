@@ -1,0 +1,24 @@
+/**
+ * The following styles get applied both on the front of your site
+ * and in the editor.
+ *
+ * Replace them with your own styles or remove the file completely.
+ */
+@use "sass:color";
+
+.wp-block-conditional-analytics-external-content-wrapper {
+
+	.content-blocking-overlay {
+		text-align: center;
+		background-color: rgba(250, 200, 200, 0.95);
+		padding: 1rem;
+		border-radius: 4px;
+		box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+		padding-bottom: 5rem;
+		padding-top: 3rem;
+
+		p {
+			margin-bottom: 0.5rem;
+		}
+	}
+}

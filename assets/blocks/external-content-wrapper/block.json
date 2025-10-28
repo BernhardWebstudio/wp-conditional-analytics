@@ -1,0 +1,45 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "conditional-analytics/external-content-wrapper",
+	"version": "1.0.0",
+	"title": "External Content Wrapper",
+	"category": "widgets",
+	"icon": "shield",
+	"description": "Wraps content that should only be displayed when cookies are accepted",
+	"supports": {
+		"html": false,
+		"align": true,
+		"color": {
+			"background": true,
+			"text": true
+		},
+		"spacing": {
+			"padding": true
+		},
+		"innerBlocks": true
+	},
+	"textdomain": "wp-conditional-analytics",
+	"editorScript": "file:./index.js",
+	"editorStyle": "file:./index.css",
+	"style": "file:./style.css",
+	"render": "file:./render.php",
+	"attributes": {
+		"blockingMessage": {
+			"type": "string",
+			"default": "This content is currently blocked to protect your privacy."
+		},
+		"buttonText": {
+			"type": "string",
+			"default": "Accept cookies and show content"
+		},
+		"contentIdentifier": {
+			"type": "string",
+			"default": ""
+		},
+		"customIdentifier": {
+			"type": "string",
+			"default": ""
+		}
+	}
+}
