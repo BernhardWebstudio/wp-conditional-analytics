@@ -40,6 +40,11 @@ class WpConditionalAnalytics
 	private $wpsf;
 
 	/**
+	 * @var bool
+	 */
+	private $wp_consent_api_active = false;
+
+	/**
 	 * WPSFTest constructor.
 	 */
 	function __construct()
@@ -58,6 +63,9 @@ class WpConditionalAnalytics
 
 		// Add actual output
 		add_action('wp_body_open', array($this, 'conditionally_output_analytics'), 20);
+
+		// Detect and integrate with WP Consent API
+		add_action('plugins_loaded', array($this, 'init_wp_consent_api_integration'));
 	}
 
 	/**
@@ -70,6 +78,98 @@ class WpConditionalAnalytics
 			'page_title'  => __('Conditional Analytics', 'wp-conditional-analytics'),
 			'menu_title'  => __('Conditional Analytics', 'wp-conditional-analytics'),
 		));
+	}
+
+	/**
+	 * Initialize WP Consent API integration
+	 */
+	function init_wp_consent_api_integration()
+	{
+		// Check if WP Consent API is available
+		$this->wp_consent_api_active = function_exists('wp_has_consent');
+
+		if ($this->wp_consent_api_active) {
+			// Declare compliance with WP Consent API
+			$plugin = plugin_basename(__FILE__);
+			add_filter("wp_consent_api_registered_{$plugin}", '__return_true');
+
+			// Register our cookies with WP Consent API
+			$this->register_cookies_with_consent_api();
+		} else {
+			// Act as consent management plugin if no other is available
+			$this->provide_consent_type_filter();
+		}
+	}
+
+	/**
+	 * Register cookies with WP Consent API
+	 */
+	function register_cookies_with_consent_api()
+	{
+		if (function_exists('wp_add_cookie_info')) {
+			// Register our own cookie
+			wp_add_cookie_info(
+				self::COOKIE_NAME,
+				'Conditional Analytics',
+				'functional',
+				__('Session', 'wp-conditional-analytics'),
+				__('Stores user consent preferences', 'wp-conditional-analytics')
+			);
+
+			// Register Google Analytics if configured
+			$settings = $this->wpsf->get_settings();
+			if (!empty($settings['google_analytics_google_analytics_tag'])) {
+				wp_add_cookie_info(
+					'_ga',
+					'Google Analytics',
+					'statistics',
+					__('2 years', 'wp-conditional-analytics'),
+					__('Used to distinguish users', 'wp-conditional-analytics')
+				);
+			}
+		}
+	}
+
+	/**
+	 * Provide consent type filter when acting as consent management plugin
+	 */
+	function provide_consent_type_filter()
+	{
+		// Only provide consent type if no other consent plugin is doing it
+		add_filter('wp_get_consent_type', array($this, 'set_consent_type'), 10, 1);
+	}
+
+	/**
+	 * Set consent type based on user's region (EU = optin, others = optout)
+	 */
+	function set_consent_type($consent_type)
+	{
+		// If already set by another plugin, don't override
+		if ($consent_type !== false) {
+			return $consent_type;
+		}
+
+		// Set to 'optin' for EU regions, detected client-side
+		// This will be overridden by JavaScript if needed
+		return 'optin';
+	}
+
+	/**
+	 * Map content types to WP Consent API categories
+	 */
+	function map_content_type_to_consent_category($content_type)
+	{
+		$mapping = array(
+			'analytics' => 'statistics',
+			'marketing' => 'marketing',
+			'social-media' => 'marketing',
+			'video' => 'marketing',
+			'maps' => 'functional',
+			'general' => 'functional',
+			'custom' => 'preferences',
+		);
+
+		return isset($mapping[$content_type]) ? $mapping[$content_type] : 'functional';
 	}
 
 	public function registerScript($id, $url)
@@ -109,7 +209,7 @@ class WpConditionalAnalytics
 ?>
 		<script type="text/javascript">
 			window.addEventListener('load', () => {
-				if (typeof vgo === "function" && wpcaGetCookie("<?php echo self::COOKIE_NAME; ?>") == "true") {
+				if (typeof vgo === "function" && (wpcaHasConsent('statistics') || wpcaGetCookie("<?php echo self::COOKIE_NAME; ?>") == "true")) {
 					vgo('process', 'allowTracking');
 				}
 			});
@@ -150,6 +250,9 @@ class WpConditionalAnalytics
 		echo "<!-- Outputting wp-conditional-analytics stuff -->";
 
 		$showBanner = $settings["general_activate_banner"];
+
+		// Check if we should show our banner (only if no other consent plugin is active)
+		$show_our_banner = $showBanner && !$this->wp_consent_api_active;
 
 		// always include the banner, but hidden
 		?>
@@ -218,6 +321,7 @@ class WpConditionalAnalytics
 				display: none;
 			}
 		</style>
+		<?php if ($show_our_banner) : ?>
 		<div class="wp-conditional-analytics-banner fixed full-width hidden" id="wpca_banner">
 			<script type="text/javascript">
 				function wpcaSetCookie(cname, cvalue, exdays) {
@@ -228,7 +332,7 @@ class WpConditionalAnalytics
 				}
 
 				function wpcaHideBanner() {
-					document.getElementById("wpca_banner").classList.add("hidden");
+					document.getElementById("wpca_banner")?.classList.add("hidden");
 				}
 			</script>
 			<div class="flex row wp-conditional-analytics-banner-content">
@@ -239,12 +343,32 @@ class WpConditionalAnalytics
 				</div>
 				<div class="column wp-conditional-analytics-banner-buttons button-group wp-element-button-group">
 					<a class="button btn wp-element-button " href="<?php echo get_privacy_policy_url(); ?>"><?php _e('Privacy Policy', 'wp-conditional-analytics'); ?></a>
-					<button type="button" class="button btn wp-element-button btn-primary btn-accept" onclick='wpcaSetCookie("<?php echo self::COOKIE_NAME; ?>", "true", <?php echo $settings["general_acceptance_save_duration"] ?>); wpcaLoadAnalytics(); wpcaHideBanner()'><?php _e('Allow', 'wp-conditional-analytics'); ?></button>
+					<button type="button" class="button btn wp-element-button btn-primary btn-accept" onclick='wpcaAcceptCookies()'><?php _e('Allow', 'wp-conditional-analytics'); ?></button>
 					<button type="button" class="button btn wp-element-button btn-secondary btn-cancel" onclick='wpcaSetCookie("<?php echo self::COOKIE_NAME; ?>", "false", <?php echo $settings["general_acceptance_decline_duration"] ?>); wpcaHideBanner()'><?php _e('Decline', 'wp-conditional-analytics'); ?></button>
 				</div>
 			</div>
 		</div>
+		<?php endif; ?>
 		<script type="text/javascript">
+			// WP Consent API integration
+			const wpConsentApiActive = <?php echo $this->wp_consent_api_active ? 'true' : 'false'; ?>;
+
+			// Helper function to check consent via WP Consent API or fallback to cookies
+			function wpcaHasConsent(category) {
+				if (wpConsentApiActive && typeof wp_has_consent === 'function') {
+					return wp_has_consent(category);
+				}
+				// Fallback to our own cookie system
+				return wpcaGetCookie("<?php echo self::COOKIE_NAME; ?>") == "true";
+			}
+
+			// Set consent via WP Consent API or fallback to cookies
+			function wpcaSetConsent(category, value) {
+				if (wpConsentApiActive && typeof wp_set_consent === 'function') {
+					wp_set_consent(category, value);
+				}
+			}
+
 			function wpcaGetCookie(name) {
 				var dc = document.cookie;
 				var prefix = name + "=";
@@ -264,10 +388,12 @@ class WpConditionalAnalytics
 				return decodeURI(dc.substring(begin + prefix.length, end));
 			}
 
+			<?php if ($show_our_banner) : ?>
 			var myCookie = wpcaGetCookie("<?php echo self::COOKIE_NAME; ?>");
-			if (myCookie == null && <?php echo ($showBanner ? "true" : "false") ?>) {
-				document.getElementById("wpca_banner").classList.remove("hidden");
+			if (myCookie == null) {
+				document.getElementById("wpca_banner")?.classList.remove("hidden");
 			}
+			<?php endif; ?>
 
 			function wpcaLoadScript(id, url, attributes = null) {
 				var script = document.createElement("script");
@@ -283,19 +409,29 @@ class WpConditionalAnalytics
 			}
 
 			function wpcaConditionallyLoadScript(id, url, attributes = null) {
-				if (wpcaGetCookie("<?php echo self::COOKIE_NAME; ?>") == "true" && !document.getElementById(id)) {
+				if (wpcaHasConsent('statistics') && !document.getElementById(id)) {
 					wpcaLoadScript(id, url, attributes);
 				}
 			}
 
 			function wpcaCookiesAreAllowed() {
-				return wpcaGetCookie("<?php echo self::COOKIE_NAME; ?>") == "true";
+				return wpcaHasConsent('statistics');
 			}
 
 			function wpcaAcceptCookies(reload = false) {
-				wpcaSetCookie("<?php echo self::COOKIE_NAME; ?>", "true", <?php echo $settings["general_acceptance_save_duration"] ?>);
+				if (wpConsentApiActive) {
+					// Use WP Consent API to set consent for all categories
+					wpcaSetConsent('statistics', 'allow');
+					wpcaSetConsent('marketing', 'allow');
+					wpcaSetConsent('preferences', 'allow');
+				} else {
+					// Fallback to our own cookie system
+					wpcaSetCookie("<?php echo self::COOKIE_NAME; ?>", "true", <?php echo $settings["general_acceptance_save_duration"] ?>);
+				}
+				
 				wpcaLoadAnalytics();
 				wpcaHideBanner();
+				
 				if (reload) {
 					location.reload();
 				}
@@ -345,17 +481,34 @@ class WpConditionalAnalytics
 				'Europe/Stockholm'
 			];
 
-			if ((wpcaGetCookie("<?php echo self::COOKIE_NAME; ?>") == "true") || (!EU_TIMEZONES.includes(Intl.DateTimeFormat().resolvedOptions().timeZone)) || (/bot|crawler|spider|crawling/i.test(navigator.userAgent))) {
+			if ((wpcaHasConsent('statistics')) || (!EU_TIMEZONES.includes(Intl.DateTimeFormat().resolvedOptions().timeZone)) || (/bot|crawler|spider|crawling/i.test(navigator.userAgent))) {
 				wpcaLoadAnalytics();
 				document.body.classList.add("cookies-accepted");
 			}
-			if (wpcaGetCookie("<?php echo self::COOKIE_NAME; ?>") == "false") {
+			if (!wpConsentApiActive && wpcaGetCookie("<?php echo self::COOKIE_NAME; ?>") == "false") {
 				document.body.classList.add("cookies-declined");
 			}
 
 			// Check if cookies are allowed for a specific content type
 			function wpcaContentTypeIsAllowed(contentType) {
 				if (!contentType) return wpcaCookiesAreAllowed();
+
+				// Map content type to WP Consent API category
+				const categoryMap = {
+					'analytics': 'statistics',
+					'marketing': 'marketing',
+					'social-media': 'marketing',
+					'video': 'marketing',
+					'maps': 'functional',
+					'general': 'functional',
+					'custom': 'preferences'
+				};
+
+				const consentCategory = categoryMap[contentType] || 'functional';
+
+				if (wpConsentApiActive) {
+					return wpcaHasConsent(consentCategory);
+				}
 
 				// Check for cookies that store content type preferences
 				const contentTypeCookie = wpcaGetCookie("wp_conditional_ana_" + contentType);
@@ -374,10 +527,28 @@ class WpConditionalAnalytics
 					return;
 				}
 
-				// Set a cookie for this specific content type
-				const date = new Date();
-				date.setTime(date.getTime() + (365 * 24 * 60 * 60 * 1000)); // 1 year
-				wpcaSetCookie("wp_conditional_ana_" + contentType, "accepted", date.toUTCString());
+				// Map content type to WP Consent API category
+				const categoryMap = {
+					'analytics': 'statistics',
+					'marketing': 'marketing',
+					'social-media': 'marketing',
+					'video': 'marketing',
+					'maps': 'functional',
+					'general': 'functional',
+					'custom': 'preferences'
+				};
+
+				const consentCategory = categoryMap[contentType] || 'functional';
+
+				if (wpConsentApiActive) {
+					// Use WP Consent API
+					wpcaSetConsent(consentCategory, 'allow');
+				} else {
+					// Set a cookie for this specific content type
+					const date = new Date();
+					date.setTime(date.getTime() + (365 * 24 * 60 * 60 * 1000)); // 1 year
+					wpcaSetCookie("wp_conditional_ana_" + contentType, "accepted", 365);
+				}
 
 				// Dispatch an event that content type cookies were accepted
 				const event = new CustomEvent("wpcaContentTypeAccepted", {
@@ -391,6 +562,21 @@ class WpConditionalAnalytics
 				document.querySelectorAll(".wpca-external-content-wrapper[data-content-type='" + contentType + "']").forEach(function(wrapper) {
 					const event = new CustomEvent("wpcaRefreshContent");
 					wrapper.dispatchEvent(event);
+				});
+			}
+
+			// Listen to WP Consent API events when available
+			if (wpConsentApiActive) {
+				document.addEventListener("wp_listen_for_consent_change", function (e) {
+					var changedConsentCategory = e.detail;
+					for (var key in changedConsentCategory) {
+						if (changedConsentCategory.hasOwnProperty(key)) {
+							if (key === 'statistics' && changedConsentCategory[key] === 'allow') {
+								wpcaLoadAnalytics();
+								document.body.classList.add("cookies-accepted");
+							}
+						}
+					}
 				});
 			}
 		</script>
