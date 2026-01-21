@@ -39,12 +39,12 @@ wpcaAcceptContentType(contentType); // trigger "accept the given content type"
 Additionally, the event `wpcaCookiesAccepted` is triggered when all cookies are accepted,
 and `wpcaContentTypeAccepted` is triggered if a certain subset of cookies for one content type is accepted.
 
-### Gutenberg
+## Gutenberg
 
 This plugin provides a Gutenberg block, called "External Content Wrapper",
 which blocks the child blocks from being rendered until sufficient cookie permissions are given.
 
-#### Usage Example
+### Usage Example
 
 1. Add the "External Content Wrapper" block to your post/page
 2. Select the content type (Analytics, Marketing, Social Media, etc.)
