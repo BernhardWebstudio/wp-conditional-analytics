@@ -68,7 +68,6 @@ $inner_content = $content;
 						// Only decode and insert the content when cookies are allowed
 						try {
 							const decodedContent = atob(encodedContent);
-							console.log('Decoded content:', decodedContent);
 							contentContainer.innerHTML = decodedContent;
 
 							// Execute any scripts that were part of the content
@@ -89,7 +88,6 @@ $inner_content = $content;
 					} else {
 						contentContainer.style.display = 'none';
 						overlay.style.display = 'block';
-						console.log('Cookies are not allowed for this content type:', contentType);
 					}
 				}
 
@@ -109,15 +107,31 @@ $inner_content = $content;
 					attributes: true
 				});
 
-				// Handle the accept button click
-				const acceptButton = wrapper.querySelector('.accept-cookies-btn');
-				if (acceptButton) {
-					acceptButton.addEventListener('click', function() {
-						const contentType = this.getAttribute('data-content-type');
+				// Listen for WP Consent API events
+				document.addEventListener("wp_listen_for_consent_change", function (e) {
+					updateVisibility();
+				});
 
-						if (contentType && typeof wpcaAcceptContentType === 'function') {
+				// Listen for custom events from this plugin
+				document.addEventListener("wpcaCookiesAccepted", function() {
+					updateVisibility();
+				});
+
+				document.addEventListener("wpcaContentTypeAccepted", function(e) {
+					if (e.detail && e.detail.contentType === contentType) {
+						updateVisibility();
+					}
+				});
+
+				// Handle the accept button clicks
+				const acceptButtons = wrapper.querySelectorAll('.accept-cookies-btn');
+				acceptButtons.forEach(function(button) {
+					button.addEventListener('click', function() {
+						const buttonContentType = this.getAttribute('data-content-type');
+
+						if (buttonContentType && typeof wpcaAcceptContentType === 'function') {
 							// Accept cookies for this specific content type
-							wpcaAcceptContentType(contentType);
+							wpcaAcceptContentType(buttonContentType);
 						} else if (typeof wpcaAcceptCookies === 'function') {
 							// Fallback to accepting all cookies
 							wpcaAcceptCookies();
@@ -125,7 +139,7 @@ $inner_content = $content;
 
 						updateVisibility();
 					});
-				}
+				});
 			}
 
 			// Initialize when DOM is ready
