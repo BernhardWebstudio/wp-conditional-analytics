@@ -207,14 +207,14 @@ class WpConditionalAnalytics
 		$ganalytics_tag = $settings["google_analytics_google_analytics_tag"];
 		$showBanner = $settings["general_activate_banner"];
 
-		// Check if we should show our banner (only if no other consent plugin is active)
-		$show_our_banner = $showBanner && !$this->wp_consent_api_active;
+		// Check if we should show our banner
+		$show_our_banner = $showBanner; // && !$this->wp_consent_api_active;
 
 		//////////////////////////////// The heart of things
 		echo "<!-- Outputting wp-conditional-analytics stuff -->";
 
 		// always include the banner, but hidden
-		?>
+?>
 
 		<style>
 			.wp-conditional-analytics-banner {
@@ -319,17 +319,23 @@ class WpConditionalAnalytics
 
 			// Helper function to check consent via WP Consent API or fallback to cookies
 			function wpcaHasConsent(category) {
+				var hasConsent = false;
 				if (wpConsentApiActive && typeof wp_has_consent === 'function') {
-					return wp_has_consent(category);
+					hasConsent = wp_has_consent(category);
 				}
 				// Fallback to our own cookie system
-				return wpcaGetCookie(wpcaCookieName) === "true";
+				return hasConsent || wpcaGetCookie(wpcaCookieName) === "true";
 			}
 
 			// Set consent via WP Consent API or fallback to cookies
 			function wpcaSetConsent(category, value) {
 				if (wpConsentApiActive && typeof wp_set_consent === 'function') {
 					wp_set_consent(category, value);
+				}
+
+				// Fallback to our own cookie system for the main consent cookie
+				if (category === 'statistics') {
+					wpcaSetCookie(wpcaCookieName, value === 'allow' ? "true" : "false", wpcaStatisticsConsentDuration);
 				}
 			}
 
@@ -487,41 +493,41 @@ class WpConditionalAnalytics
 			}
 
 			const EU_TIMEZONES = [
-				'Europe/Vienna',
-				'Europe/Brussels',
-				'Europe/Sofia',
-				'Europe/Zagreb',
+				'Africa/Ceuta',
 				'Asia/Famagusta',
 				'Asia/Nicosia',
-				'Europe/Prague',
-				'Europe/Copenhagen',
-				'Europe/Tallinn',
-				'Europe/Helsinki',
-				'Europe/Paris',
-				'Europe/Berlin',
-				'Europe/Zurich',
-				'Europe/Bern',
-				'Europe/Busingen',
-				'Europe/Athens',
-				'Europe/Budapest',
-				'Europe/Dublin',
-				'Europe/Rome',
-				'Europe/Riga',
-				'Europe/Vilnius',
-				'Europe/Luxembourg',
-				'Europe/Malta',
-				'Europe/Amsterdam',
-				'Europe/Warsaw',
 				'Atlantic/Azores',
-				'Atlantic/Madeira',
-				'Europe/Lisbon',
-				'Europe/Bucharest',
-				'Europe/Bratislava',
-				'Europe/Ljubljana',
-				'Africa/Ceuta',
 				'Atlantic/Canary',
+				'Atlantic/Madeira',
+				'Europe/Amsterdam',
+				'Europe/Athens',
+				'Europe/Berlin',
+				'Europe/Bern',
+				'Europe/Bratislava',
+				'Europe/Brussels',
+				'Europe/Bucharest',
+				'Europe/Budapest',
+				'Europe/Busingen',
+				'Europe/Copenhagen',
+				'Europe/Dublin',
+				'Europe/Helsinki',
+				'Europe/Lisbon',
+				'Europe/Ljubljana',
+				'Europe/Luxembourg',
 				'Europe/Madrid',
-				'Europe/Stockholm'
+				'Europe/Malta',
+				'Europe/Paris',
+				'Europe/Prague',
+				'Europe/Riga',
+				'Europe/Rome',
+				'Europe/Sofia',
+				'Europe/Stockholm',
+				'Europe/Tallinn',
+				'Europe/Vienna',
+				'Europe/Vilnius',
+				'Europe/Warsaw',
+				'Europe/Zagreb',
+				'Europe/Zurich'
 			];
 
 			function wpcaShouldAutoloadAnalytics() {
